@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApp2
+﻿namespace exp_smooth
 {
     partial class MainForm
     {

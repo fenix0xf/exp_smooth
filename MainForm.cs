@@ -1,29 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp2
+namespace exp_smooth
 {
     public partial class MainForm : Form
     {
         private Graphics _gfx;
-        private Pen _penArr = new Pen(Color.Silver);
-        private Pen _penExp = new Pen(Color.Red);
-        private Pen _penSine = new Pen(Color.Green);
-        private Font _font = new Font(FontFamily.GenericSansSerif, 12);
+        private readonly Pen _penArr = new Pen(Color.Silver);
+        private readonly Pen _penExp = new Pen(Color.Red);
+        private readonly Pen _penSine = new Pen(Color.Green);
+        private readonly Font _font = new Font(FontFamily.GenericSansSerif, 12);
         private int[] _arr;
         private int[] _arrExp;
         private int[] _arrSine;
         private Size _panelSize;
-        private double _smoothFact = 0.01; ///< Smoothing factor (0 < a < 1).
+        private double _smoothFact = 0.01;
 
         public MainForm()
         {
@@ -36,13 +30,13 @@ namespace WindowsFormsApp2
             _gfx.Clear(Color.White);
         }
 
-        private void PanelDrawArray<T>(Pen pen, IList<T> arr) where T: IConvertible
+        private void PanelDrawArray<T>(Pen pen, IList<T> arr) where T : IConvertible
         {
-            int zero = panel1.Size.Height / 2;
+            var zero = panel1.Size.Height / 2;
 
             var points = new Point[arr.Count];
 
-            for (int i = 0; i < arr.Count; i++)
+            for (var i = 0; i < arr.Count; i++)
             {
                 points[i].X = i;
                 points[i].Y = arr[i].ToInt32(NumberFormatInfo.CurrentInfo) + zero;
@@ -53,39 +47,34 @@ namespace WindowsFormsApp2
 
         private void Draw()
         {
-            /// Updating size of the panel.
+            // Updating size of the panel.
             if ((_gfx == null) || (_panelSize != panel1.Size))
             {
                 _panelSize = panel1.Size;
-
-                if (_gfx != null)
-                {
-                    _gfx.Dispose();
-                }
-
+                _gfx?.Dispose();
                 _gfx = panel1.CreateGraphics();
             }
 
             var rnd = new Random();
-            int maxValue = panel1.Height / 4;
-            
-            int exp = 0;
+            var maxValue = panel1.Height / 4;
+
+            var exp = 0;
 
             _arr = new int[panel1.Size.Width];
             _arrExp = new int[panel1.Size.Width];
             _arrSine = new int[panel1.Size.Width];
 
-            for (int i = 0; i < _arr.Length; i++)
+            for (var i = 0; i < _arr.Length; i++)
             {
-                int noise = rnd.Next(150);
+                var noise = rnd.Next(150);
 
                 var angle = Math.PI * i / 180 / 2;
-                var sv = (int)(Math.Sin(angle) * maxValue);
+                var sv = (int) (Math.Sin(angle) * maxValue);
 
                 _arrSine[i] = sv;
                 _arr[i] = rnd.Next(sv - noise, sv + noise);
-                
-                exp = (int)(_smoothFact * _arr[i] + (1 - _smoothFact) * exp);
+
+                exp = (int) (_smoothFact * _arr[i] + (1 - _smoothFact) * exp);
                 _arrExp[i] = exp;
             }
 
@@ -102,7 +91,7 @@ namespace WindowsFormsApp2
         private void TrackBar1_Scroll(object sender, EventArgs e)
         {
             _smoothFact = trackBar1.Value / 100.0;
-            label1.Text = $"Smoothing factor(0 < a < 1): {_smoothFact:G}";
+            label1.Text = $@"Smoothing factor(0 < a < 1): {_smoothFact:G}";
             Draw();
         }
 

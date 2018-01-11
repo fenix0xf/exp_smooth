@@ -1,0 +1,6 @@
+.idea
+.vs
+/bin/Debug
+/obj
+*.pdb
+*.user
